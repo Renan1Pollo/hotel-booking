@@ -1,17 +1,17 @@
 package com.renanpollo.bookingservice.core.domain.enums;
 
-public enum BookingStatus {
+public enum BookingAction {
 
-    CREATED_NOT_PAID(1, "Criado (Não pago)"),
-    PAID(2, "Pago"),
-    FINISHED(3, "Finalizado (após período)"),
-    CANCELLED(4, "Cancelado (pagamento falhou ou cancelamento manual)"),
-    REFUNDED(5, "Reembolsado");
+    PAY(1, "Pagamento confirmado"),
+    FINISH(2, "Reserva finalizada após uso"),
+    CANCEL(3, "Reserva cancelada antes do pagamento"),
+    REFUND(4, "Reembolso realizado"),
+    REOPEN(5, "Reserva reaberta após cancelamento");
 
     private final int code;
     private final String description;
 
-    BookingStatus(int code, String description) {
+    BookingAction(int code, String description) {
         this.code = code;
         this.description = description;
     }

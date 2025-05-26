@@ -1,5 +1,8 @@
 package com.renanpollo.bookingservice.core.domain.entities;
 
+import com.renanpollo.bookingservice.core.domain.enums.BookingAction;
+import com.renanpollo.bookingservice.core.domain.enums.BookingStatus;
+
 import java.time.LocalDateTime;
 
 public class Booking {
@@ -8,17 +11,41 @@ public class Booking {
     private LocalDateTime placedAt;
     private LocalDateTime start;
     private LocalDateTime end;
-    private int statusCode;
+    private Room room;
+    private Guest guest;
+    private BookingStatus status;
 
     public Booking() {
+        this.status = BookingStatus.CREATED_NOT_PAID;
+        this.placedAt = LocalDateTime.now();
     }
 
-    public Booking(Long id, LocalDateTime placedAt, LocalDateTime start, LocalDateTime end, int statusCode) {
+    public Booking(Long id, LocalDateTime placedAt, LocalDateTime start, LocalDateTime end, BookingStatus status) {
         this.id = id;
         this.placedAt = placedAt;
         this.start = start;
         this.end = end;
-        this.statusCode = statusCode;
+        this.status = status;
+    }
+
+    public void changeState(BookingAction action) {
+        this.status = switch (this.status) {
+            case CREATED_NOT_PAID -> switch (action) {
+                case PAY    -> BookingStatus.PAID;
+                case CANCEL -> BookingStatus.CANCELLED;
+                default     -> this.status;
+            };
+            case PAID -> switch (action) {
+                case FINISH  -> BookingStatus.FINISHED;
+                case REFUND -> BookingStatus.REFUNDED;
+                default      -> this.status;
+            };
+            case CANCELLED -> switch (action) {
+                case REOPEN -> BookingStatus.CREATED_NOT_PAID;
+                default     -> this.status;
+            };
+            default -> this.status;
+        };
     }
 
     public Long getId() {
@@ -53,11 +80,11 @@ public class Booking {
         this.end = end;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public BookingStatus getStatus() {
+        return status;
     }
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+    public void setStatus(BookingStatus status) {
+        this.status = status;
     }
 }
